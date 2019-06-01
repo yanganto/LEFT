@@ -1,3 +1,4 @@
+import os
 import sys
 
 from flask import Flask, Blueprint, Response, request
@@ -7,6 +8,7 @@ import markdown2
 from api import api
 from api.hashtags import ns as hashtags_namespace
 from api.users import ns as users_namespace
+from utils.twitter_requests import TwitterRequests, TwitterKeyAbsentError
 
 application = Flask(__name__)
 
@@ -30,13 +32,15 @@ application.register_blueprint(blueprint)
 
 if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
-    print("Listen Everything From Tweets (LEFT) on {}".format(port))
+    api_key = os.environ.get('TWITTER_API_KEY')
+    api_secret_key = os.environ.get('TWITTER_API_SECRET_KEYS')
 
-    # Shutdown API for unit test
-    @application.route('/shutdown')
-    def shutdown():
-        func = request.environ.get('werkzeug.server.shutdown')
-        if func is None:
-            raise RuntimeError('Not running with the Werkzeug Server')
-        func()
+    try:
+        TwitterRequests(api_key, api_secret_key)
+    except TwitterKeyAbsentError:
+        print("please put set twitter api keys as environ varables, "
+              "TWITTER_API_KEY, TWITTER_API_SECRET_KEYS")
+        sys.exit(1)
+
+    print("Listen Everything From Tweets (LEFT) on {}".format(port))
     application.run(host='0.0.0.0', port=port)

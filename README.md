@@ -12,8 +12,14 @@ Listen Everything  From Tweets [![Build Status](https://travis-ci.org/yanganto/L
   - if you have multiple python, you may use following command to avoid problem
   - `python3.6 -m pip install -r requirements.txt`
 
+- set up Twitter api keys as environment varable for the server
+  - `export TWITTER_API_KEY=xxxxxxxxxxxxxxxxxxxxx`
+  - `export TWITTER_API_SECRET_KEYS=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+
+
 ## Run test
-  - `py.test`
+  - run test case at project root
+  - `python3 -m pytest`
 
 
 ## Run Service
