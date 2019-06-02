@@ -1,3 +1,5 @@
+import logging
+
 from flask_accept import accept
 from flask_restplus import Resource
 
@@ -5,6 +7,7 @@ from api import api
 from api.model import tweet_info, query_parameter, status_formator
 from utils.twitter_requests import TwitterRequests, TwitterConnectionError
 
+logger = logging.getLogger(__name__)
 ns = api.namespace('users', description='users resource of tweets')
 
 @ns.route("/<string:user_name>")
@@ -22,4 +25,5 @@ class Users(Resource):
                     for s in TwitterRequests().user_timeline(user_name,
                                                              count=args.get('limit', 30))]
         except TwitterConnectionError:
+            logger.exception("Twitter Service Down")
             return "Twitter Service Down", 503

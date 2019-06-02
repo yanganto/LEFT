@@ -1,3 +1,5 @@
+import logging
+
 from flask_accept import accept
 from flask_restplus import Resource
 
@@ -6,6 +8,7 @@ from api.model import tweet_info, query_parameter, status_formator
 from utils.twitter_requests import TwitterRequests, TwitterConnectionError
 
 
+logger = logging.getLogger(__name__)
 ns = api.namespace('hashtags', description='hashtags resource of tweets')
 
 @ns.route("/<string:tag>")
@@ -23,4 +26,5 @@ class hashtags(Resource):
                     for s in TwitterRequests().standard_query('#' + tag,
                                                               count=args.get('limit', 30))]
         except TwitterConnectionError:
+            logger.exception("Twitter Service Down")
             return "Twitter Service Down", 503

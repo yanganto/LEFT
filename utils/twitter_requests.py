@@ -1,10 +1,12 @@
 import base64
 from functools import lru_cache
 import json
+import logging
 from urllib.parse import urlencode
 
 import requests
 
+logger = logging.getLogger(__name__)
 
 class TwitterConnectionError(Exception):
     """Unable to connect Twitter API server"""
@@ -61,6 +63,7 @@ class TwitterRequests():
                 })
             return json.loads(r.text)['access_token']
         except:
+            logger.exception("Twitter login fail")
             raise TwitterAPICredentialError('Twitter login fail')
 
     def _raw_query(self, uri, **kwarg):
@@ -71,17 +74,20 @@ class TwitterRequests():
                     headers={"Authorization": "Bearer " + self._token})
 
                 if r.status_code == 401:
+                    logger.error(f"Twitter Token Deny: {r.text}")
                     raise TwitterAPICredentialError("Twitter Token Deny")
 
                 if r.status_code == 200:
+                    logger.debug(f"{uri} [200] {r.text}")
                     return r.text
                 else:
-                    # TODO:
-                    # redirect to log system or log file, depence on production environ
-                    print(r.status_code)
-                    print(r.text)
+                    logger.info(r.status_code)
+                    logger.info(r.text)
             except:
-                pass
+                logger.warning(f"{uri} [{getattr(r, 'status_code', '')}] "
+                               f"{getattr(r, 'text', '')}")
+
+        logger.error(f"query {uri} fail : {kwarg}")
         raise TwitterConnectionError()
 
     @lru_cache(maxsize=128)
@@ -92,6 +98,7 @@ class TwitterRequests():
         except TwitterConnectionError as e:
             raise e
         except:
+            logger.exception("standard query return format error")
             raise TwitterFormatError()
 
     @lru_cache(maxsize=128)
@@ -101,4 +108,5 @@ class TwitterRequests():
         except TwitterConnectionError as e:
             raise e
         except:
+            logger.exception("user timeline return format error")
             raise TwitterFormatError()
