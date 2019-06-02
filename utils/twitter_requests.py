@@ -1,5 +1,4 @@
 import base64
-from datetime import datetime
 import json
 from urllib.parse import urlencode
 
@@ -19,10 +18,6 @@ class TwitterAPICredentialError(Exception):
     pass
 
 
-def _time_string_formator(orig):
-    """from twitter time format to specific time format we want"""
-    dt = datetime.strptime(orig, '%a %b %d %H:%M:%S +0000 %Y')
-    return dt.strftime("%-I:%M %p - %-d %b %Y")
 
 
 class TwitterRequests():
@@ -65,19 +60,18 @@ class TwitterRequests():
         except:
             raise TwitterAPICredentialError('Twitter login fail')
 
-    def _raw_query(self, query_str, count):
+    def _raw_query(self, uri, **kwarg):
         for _ in range(3):
             try:
                 r = requests.get(
-                    "https://api.twitter.com/1.1/search/tweets.json?{}".format(
-                        urlencode(dict(q=query_str, result_type="mixed", count=count))),
+                    "https://api.twitter.com/1.1{}?{}".format(uri, urlencode(kwarg)),
                     headers={"Authorization": "Bearer " + self.token})
 
                 if r.status_code == 401:
                     raise TwitterAPICredentialError("Twitter Token Deny")
 
                 if r.status_code == 200:
-                    return json.loads(r.text)
+                    return r.text
                 else:
                     # TODO:
                     # redirect to log system or log file, depence on production environ
@@ -87,18 +81,18 @@ class TwitterRequests():
                 pass
         raise TwitterConnectionError()
 
-    def query(self, query_str, count=30):
+    def standard_query(self, query_str, count=30):
         try:
-            statuses = self._raw_query(query_str, count)['statuses']
-            return [dict(
-                    account={'id': s['user']['id'],
-                             'fullname': s['user']['name'],
-                             'href': '/' + s['user']['screen_name']},
-                    date=_time_string_formator(s['created_at']),
-                    text=s['text'],
-                    hashtags=[t['text'] for t in s['entities'].get('hashtags', [])],
-                    likes=s.get('favourites_count', 0),
-                    retweets=s.get('retweet_count', 0)) for s in statuses]
+            return json.loads(
+                self._raw_query("/search/tweets.json", q=query_str, count=count))['statuses']
+        except TwitterConnectionError as e:
+            raise e
+        except:
+            raise TwitterFormatError()
+
+    def user_timeline(self, user, count=30):
+        try:
+            return json.loads(self._raw_query("/statuses/user_timeline.json", screen_name=user, count=count))
         except TwitterConnectionError as e:
             raise e
         except:

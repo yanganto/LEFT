@@ -2,7 +2,7 @@ from flask_accept import accept
 from flask_restplus import Resource
 
 from api import api
-from api.model import tweet_info, query_parameter
+from api.model import tweet_info, query_parameter, status_formator
 from utils.twitter_requests import TwitterRequests, TwitterConnectionError
 
 ns = api.namespace('users', description='users resource of tweets')
@@ -18,7 +18,8 @@ class Users(Resource):
         """search users from tweets"""
         try:
             args = query_parameter.parse_args()
-            return TwitterRequests().query('@' + user_name,
-                                           count=args.get('limit', 30))
+            return [status_formator(s)
+                    for s in TwitterRequests().user_timeline(user_name,
+                                                             count=args.get('limit', 30))]
         except TwitterConnectionError:
             return "Twitter Service Down", 503

@@ -1,5 +1,6 @@
-from flask_restplus import fields, reqparse
+from datetime import datetime
 
+from flask_restplus import fields, reqparse
 
 from api import api
 
@@ -22,3 +23,19 @@ tweet_info = api.model('TweetInfo', {
 
 query_parameter = reqparse.RequestParser()
 query_parameter.add_argument('limit', type=int, help='The number of tweets', default=30)
+
+def _time_string_formator(orig):
+    """from twitter time format to specific time format we want"""
+    dt = datetime.strptime(orig, '%a %b %d %H:%M:%S +0000 %Y')
+    return dt.strftime("%-I:%M %p - %-d %b %Y")
+
+def status_formator(s):
+    """parse twitter status to tweet_info model"""
+    return dict(account={'id': s['user']['id'],
+                         'fullname': s['user']['name'],
+                         'href': '/' + s['user']['screen_name']},
+                date=_time_string_formator(s['created_at']),
+                text=s['text'],
+                hashtags=[t['text'] for t in s['entities'].get('hashtags', [])],
+                likes=s.get('favourites_count', 0),
+                retweets=s.get('retweet_count', 0))

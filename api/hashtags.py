@@ -2,7 +2,7 @@ from flask_accept import accept
 from flask_restplus import Resource
 
 from api import api
-from api.model import tweet_info, query_parameter
+from api.model import tweet_info, query_parameter, status_formator
 from utils.twitter_requests import TwitterRequests, TwitterConnectionError
 
 
@@ -19,7 +19,8 @@ class hashtags(Resource):
         """search hashtags from tweets"""
         try:
             args = query_parameter.parse_args()
-            return TwitterRequests().query('#' + tag,
-                                           count=args.get('limit', 30))
+            return [status_formator(s)
+                    for s in TwitterRequests().standard_query('#' + tag,
+                                                              count=args.get('limit', 30))]
         except TwitterConnectionError:
             return "Twitter Service Down", 503
