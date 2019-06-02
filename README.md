@@ -12,10 +12,8 @@ Listen Everything  From Tweets [![Build Status](https://travis-ci.org/yanganto/L
   - if you have multiple python, you may use following command to avoid problem
   - `python3.6 -m pip install -r requirements.txt`
 
-- set up Twitter api keys as environment varable for the server
-  - `export TWITTER_API_KEY=xxxxxxxxxxxxxxxxxxxxx`
-  - `export TWITTER_API_SECRET_KEYS=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
-
+- (optionnal) set up Twitter api token as environment varable for the server
+  - `export TWITTER_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
 
 ## Run test
   - run test case at project root
@@ -23,12 +21,20 @@ Listen Everything  From Tweets [![Build Status](https://travis-ci.org/yanganto/L
 
 
 ## Run Service
-
+### run with TWITTER\_TOKEN environment varlable
 - run service on 8080 (default) port
-  - `python3.6 main.py`
+  - `python3.6 left.py`
 
 - run service on specific port
-  - `python3.6 main.py [port number]`
+  - `python3.6 left.py -p [port number]`
+
+### run without environment varlable setting
+- run service with Twitter API Token option
+  - `python3.6 left.py -t [api token]`
+
+- run service with Twitter API Keys options
+  - `python3.6 left.py -k [api key] -s [api secret key]`
+
 
 ## Make a query
 

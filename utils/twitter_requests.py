@@ -14,8 +14,8 @@ class TwitterFormatError(Exception):
     """Unexpect format from Twitter"""
     pass
 
-class TwitterKeyAbsentError(Exception):
-    """Absent of Twitter API Keys"""
+class TwitterAPICredentialError(Exception):
+    """Credential of Twitter Error"""
     pass
 
 
@@ -30,28 +30,29 @@ class TwitterRequests():
 
     __instance = None  # regist by API key
 
-    def __new__(cls, api_key=None, api_secret_key=None):
+    def __new__(cls, token=None, api_key=None, api_secret_key=None):
         if TwitterRequests.__instance:
             return TwitterRequests.__instance
         return object.__new__(cls)
 
-    def __init__(self, api_key=None, api_secret_key=None):
+    def __init__(self, token=None, api_key=None, api_secret_key=None):
         if not TwitterRequests.__instance:
+            if token:
+                self.token = token
+            elif api_key and api_secret_key:
+                self.token = self.login(api_key, api_secret_key)
+            else:
+                raise TwitterAPICredentialError('Lack of API keys or token')
 
-            if not api_key or not api_secret_key:
-                raise TwitterKeyAbsentError()
-
-            self.api_key = api_key
-            self.token = self.login(api_secret_key)
             TwitterRequests.__instance = self
 
     def __del__(self):
         del TwitterRequests.__instance
 
-    def login(self, api_secret_key):
+    def login(self, api_key, api_secret_key):
         try:
             auth = base64.b64encode(
-                "{}:{}".format(self.api_key, api_secret_key).encode('utf-8')
+                "{}:{}".format(api_key, api_secret_key).encode('utf-8')
             ).decode('utf-8')
             r = requests.post(
                 'https://api.twitter.com/oauth2/token',
@@ -62,7 +63,7 @@ class TwitterRequests():
                 })
             return json.loads(r.text)['access_token']
         except:
-            RuntimeError("Twitter login fail")
+            raise TwitterAPICredentialError('Twitter login fail')
 
     def _raw_query(self, query_str, count):
         for _ in range(3):
@@ -73,9 +74,7 @@ class TwitterRequests():
                     headers={"Authorization": "Bearer " + self.token})
 
                 if r.status_code == 401:
-                    # just prevent someone revoke the token unconsciously
-                    self.login()
-                    continue
+                    raise TwitterAPICredentialError("Twitter Token Deny")
 
                 if r.status_code == 200:
                     return json.loads(r.text)

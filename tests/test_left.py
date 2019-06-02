@@ -9,16 +9,16 @@ import requests
 
 
 @pytest.mark.skipif(
-    not os.environ.get("TWITTER_API_KEY") or not os.environ.get("TWITTER_API_SECRET_KEYS"),
-    reason="Lack twitter keys to run test")
-class TestLEFT():
+    not os.environ.get("TWITTER_TOKEN"),
+    reason="Lack twitter token to run test")
+class TestLEFTAPI():
     """API Test for LEFT Server"""
     left_server = None
 
     @classmethod
     def setup_class(cls):
         """run LEFT server"""
-        cls.left_server = subprocess.Popen('python3 main.py', shell=True)
+        cls.left_server = subprocess.Popen('python3 left.py', shell=True)
         sleep(3)
 
 
@@ -36,3 +36,4 @@ class TestLEFT():
         r = requests.get('http://127.0.0.1:8080/users/twitter?limit=1',
                          headers={"accept": "application/json"})
         assert len(json.loads(r.text)) == 1
+
