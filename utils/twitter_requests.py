@@ -1,4 +1,5 @@
 import base64
+from functools import lru_cache
 import json
 from urllib.parse import urlencode
 
@@ -23,6 +24,8 @@ class TwitterAPICredentialError(Exception):
 class TwitterRequests():
     """a request warpper for twitter"""
 
+    __slots__ = ("_token",)
+
     __instance = None  # regist by API key
 
     def __new__(cls, token=None, api_key=None, api_secret_key=None):
@@ -33,9 +36,9 @@ class TwitterRequests():
     def __init__(self, token=None, api_key=None, api_secret_key=None):
         if not TwitterRequests.__instance:
             if token:
-                self.token = token
+                self._token = token
             elif api_key and api_secret_key:
-                self.token = self.login(api_key, api_secret_key)
+                self._token = self.login(api_key, api_secret_key)
             else:
                 raise TwitterAPICredentialError('Lack of API keys or token')
 
@@ -65,7 +68,7 @@ class TwitterRequests():
             try:
                 r = requests.get(
                     "https://api.twitter.com/1.1{}?{}".format(uri, urlencode(kwarg)),
-                    headers={"Authorization": "Bearer " + self.token})
+                    headers={"Authorization": "Bearer " + self._token})
 
                 if r.status_code == 401:
                     raise TwitterAPICredentialError("Twitter Token Deny")
@@ -81,6 +84,7 @@ class TwitterRequests():
                 pass
         raise TwitterConnectionError()
 
+    @lru_cache(maxsize=128)
     def standard_query(self, query_str, count=30):
         try:
             return json.loads(
@@ -90,6 +94,7 @@ class TwitterRequests():
         except:
             raise TwitterFormatError()
 
+    @lru_cache(maxsize=128)
     def user_timeline(self, user, count=30):
         try:
             return json.loads(self._raw_query("/statuses/user_timeline.json", screen_name=user, count=count))
