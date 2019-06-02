@@ -13,11 +13,11 @@ Listen Everything  From Tweets [![Build Status](https://travis-ci.org/yanganto/L
   - `python3.6 -m pip install -r requirements.txt`
 
 - (optionnal) set up Twitter api token as environment varable for the server
-  - `export TWITTER_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+  - `export TWITTER_TOKEN=xxx..xxx`
 
 ## Run test
   - run test case at project root
-  - `python3 -m pytest`
+    - `python3 -m pytest`
 
 
 ## Run Service
