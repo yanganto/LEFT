@@ -1,5 +1,4 @@
 import base64
-from functools import lru_cache
 import json
 import logging
 from urllib.parse import urlencode
@@ -86,7 +85,8 @@ class TwitterRequests():
         logger.error(f"query {uri} fail : {kwarg}")
         raise TwitterConnectionError()
 
-    @lru_cache(maxsize=128)
+    # Because there is a requirement `scraping in real-time`, the cache is disabled
+    # @lru_cache(maxsize=128)
     def standard_query(self, query_str, count=30):
         try:
             return json.loads(
@@ -97,7 +97,8 @@ class TwitterRequests():
             logger.exception("standard query return format error")
             raise TwitterFormatError()
 
-    @lru_cache(maxsize=128)
+    # Because there is a requirement `scraping in real-time`, the cache is disabled
+    # @lru_cache(maxsize=128)
     def user_timeline(self, user, count=30):
         try:
             return json.loads(self._raw_query("/statuses/user_timeline.json", screen_name=user, count=count))
