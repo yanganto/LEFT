@@ -3,8 +3,8 @@
 - Listen Everything From Tweets
 
 # Usage
-## Install Python 3.6+ and python packages
-
+## Install App
+### Install Python 3.6+ and python packages
 - install python3.6+
   - please refer [https://www.python.org/](https://www.python.org/)
 
@@ -16,10 +16,12 @@
 - (optionnal) set up Twitter api token as environment varable for the server
   - `export TWITTER_TOKEN=xxx..xxx`
 
+### Install Docker Image
+- `docker pull yanganto/left`
+
 ## Run test
   - run test case at project root
     - `python3 -m pytest`
-
 
 ## Run Service
 ### run with TWITTER\_TOKEN environment varlable
@@ -35,6 +37,9 @@
 
 - run service with Twitter API Keys options
   - `python3 left.py -k [api key] -s [api secret key]`
+
+### run with docker
+- `docker run -p 8080:8080 -e TWITTER_TOKEN='xxx..xxx' yanganto/left`
 
 
 ## Make a query
