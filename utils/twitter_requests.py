@@ -21,8 +21,6 @@ class TwitterAPICredentialError(Exception):
     pass
 
 
-
-
 class TwitterRequests():
     """a request warpper for twitter"""
 
@@ -69,16 +67,14 @@ class TwitterRequests():
     def _raw_query(self, uri, **kwarg):
         for _ in range(3):
             try:
-                r = requests.get(
-                    "https://api.twitter.com/1.1{}?{}".format(uri, urlencode(kwarg)),
-                    headers={"Authorization": "Bearer " + self._token})
-
+                url = "https://api.twitter.com/1.1{}?{}".format(uri, urlencode(kwarg))
+                r = requests.get(url, headers={"Authorization": "Bearer " + self._token})
                 if r.status_code == 401:
                     logger.error(f"Twitter Token Deny: {r.text}")
                     raise TwitterAPICredentialError("Twitter Token Deny")
 
                 if r.status_code == 200:
-                    logger.debug(f"{uri} [200] {r.text}")
+                    logger.debug(f"{url} [200] {r.text}")
                     return r.text
                 else:
                     logger.info(r.status_code)

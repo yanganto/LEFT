@@ -118,3 +118,17 @@ class TestLEFTModel():
 
     def test_time_formator(self):
         assert _time_string_formator("Fri Mar 08 14:54:01 +0000 2018") == "2:54 PM - 8 Mar 2018"
+
+
+class TestLEFTCli():
+    def teardown_method(self, method):
+        """stop LEFT server"""
+        os.kill(self.left_server.pid, signal.SIGTERM)
+        if os.path.isfile('/tmp/left.log'):
+            os.remove('/tmp/left.log')
+
+
+    def test_set_up_log_fil(self):
+        self.left_server = subprocess.Popen('python3 left.py -l /tmp/left.log', shell=True)
+        sleep(3)
+        assert os.path.isfile('/tmp/left.log')

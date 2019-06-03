@@ -12,7 +12,7 @@ ns = api.namespace('users', description='users resource of tweets')
 
 @ns.route("/<string:user_name>")
 class Users(Resource):
-    @accept('application/json')
+    @accept('application/json', 'application/anymind.left.v1+json')
     @ns.expect(query_parameter)
     @api.response(200, "Success")
     @api.response(503, 'Twitter Service Down')

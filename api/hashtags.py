@@ -13,7 +13,7 @@ ns = api.namespace('hashtags', description='hashtags resource of tweets')
 
 @ns.route("/<string:tag>")
 class hashtags(Resource):
-    @accept('application/json')
+    @accept('application/json', 'application/anymind.left.v1+json')
     @ns.expect(query_parameter)
     @api.response(200, "Success")
     @api.response(503, 'Twitter Service Down')

@@ -1,5 +1,6 @@
-# LEFT
-Listen Everything  From Tweets [![Build Status](https://travis-ci.org/yanganto/LEFT.svg?branch=master)](https://travis-ci.org/yanganto/LEFT)
+# LEFT [![Build Status](https://travis-ci.org/yanganto/LEFT.svg?branch=master)](https://travis-ci.org/yanganto/LEFT)
+- verion: 0.0.1
+- Listen Everything From Tweets
 
 # Usage
 ## Install Python 3.6+ and python packages
@@ -23,17 +24,17 @@ Listen Everything  From Tweets [![Build Status](https://travis-ci.org/yanganto/L
 ## Run Service
 ### run with TWITTER\_TOKEN environment varlable
 - run service on 8080 (default) port
-  - `python3.6 left.py`
+  - `python3 left.py`
 
 - run service on specific port
-  - `python3.6 left.py -p [port number]`
+  - `python3 left.py -p [port number]`
 
 ### run without environment varlable setting
 - run service with Twitter API Token option
-  - `python3.6 left.py -t [api token]`
+  - `python3 left.py -t [api token]`
 
 - run service with Twitter API Keys options
-  - `python3.6 left.py -k [api key] -s [api secret key]`
+  - `python3 left.py -k [api key] -s [api secret key]`
 
 
 ## Make a query

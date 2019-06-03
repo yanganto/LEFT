@@ -1,12 +1,15 @@
-"""LEFT
+"""LEFT (version 0.0.1)
 usage: left.py [-h] [-v] [-k API_KEY] [-s API_SECRET_KEY] [-t TOKEN] [-p PORT]
 
 optional arguments:
+  -h, --help
+    show this help message and exit
+
   -k API_KEY, --key=API_KEY
     if TOEKEN is not provided, API_KEY and API_SECRET_KEY should provided to obtain then token.
 
-  -h, --help
-    show this help message and exit
+  -l FILE_NAME, --log=FILE_NAME
+    set up log file, default is "left.log", it can be a filename or "stdout"
 
   -s API_SECRET_KEY, --secret=API_SECRET_KEY
     if TOEKEN is not provided, API_KEY and API_SECRET_KEY should provided to obtain then token.
@@ -59,8 +62,8 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
 
     try:
-        opts, args = getopt.getopt(argv, "k:s:t:p:vh",
-                                   ['key', 'secret', 'token', 'port', 'verbose', 'help'])
+        opts, args = getopt.getopt(argv, "k:s:t:p:l:vh",
+                                   ['key', 'secret', 'token', 'port', 'log', 'verbose', 'help'])
     except getopt.GetoptError as e:
         print(__doc__)
         sys.exit("invalid option: " + str(e))
@@ -70,6 +73,8 @@ if __name__ == '__main__':
     api_secret_key = None
     api_token = None
     logger_level = logging.INFO
+    log_file = "left.log"
+
 
     try:
         for o, a in opts:
@@ -86,6 +91,11 @@ if __name__ == '__main__':
                 token = a
             elif o in ('-v', '--verbose'):
                 logger_level = logging.DEBUG  # INFO or DEBUG, just simple
+            elif o in ('-l', '--log'):
+                if a == 'stdout':
+                    log_file = None
+                else:
+                    log_file = a
 
     except ValueError:
         sys.exit("invalid value of option {}: {}".format(o, a))
@@ -93,8 +103,13 @@ if __name__ == '__main__':
         sys.exit("invalid options " + o)
         print(__doc__)
 
-    logging.basicConfig(filename="left.log", level=logger_level,
-                        format='%(levelname)s:%(name)s:%(message)s')
+    if log_file:
+        logging.basicConfig(filename=log_file, level=logger_level,
+                            format='%(levelname)s:%(name)s:%(message)s')
+    else:
+        logging.basicConfig(stream=sys.stdout, level=logger_level,
+                            format='%(levelname)s:%(name)s:%(message)s')
+
     if not api_token:
         api_token = os.environ.get('TWITTER_TOKEN')
         logger.debug("load TWITTER_TOKEN from environment")
